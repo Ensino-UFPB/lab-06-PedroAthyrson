@@ -60,7 +60,12 @@ const mensagensDeErro = {
 const validadores = {
     dataNascimento:input => validaDataNascimento(input),
     cpf:input => validaCPF(input),
-    cep:input => recuperarCEP(input)
+    cep:input => recuperarCEP(input),
+    telefone:input => validaTelefone(input),
+    instagram:input => validaInstagram(input),
+    nomeProduto: input => validaNomeProduto(input),
+    quantidade: input => validaQuantidade(input),
+    preco: input => validaPreco(input)
 }
 
 function mostraMensagemDeErro(tipoDeInput, input) {
@@ -158,6 +163,27 @@ function confirmaDigito(soma) {
     return 11 - (soma % 11)
 }
 
+function validaTelefone(input) {
+    const telefone = input.value.replace(/\D/g, '');
+    let mensagem = '';
+
+    // Validação do DDD e número de telefone
+    const dddValido = telefone.length === 11 && telefone.startsWith('83');
+    if (!dddValido) {
+        mensagem = 'O telefone deve ter o DDD correto e 9 dígitos';
+    }
+
+    input.setCustomValidity(mensagem);
+}
+
+function validaInstagram(input) {
+    const instagramRegex = /^@([a-zA-Z0-9_]+)$/;
+    const mensagem = instagramRegex.test(input.value) ? '' : 'O Instagram deve começar com @ seguido por letras ou números';
+    input.setCustomValidity(mensagem);
+}
+
+
+
 function recuperarCEP(input) {
     const cep = input.value.replace(/\D/g, '')
     const url = `https://viacep.com.br/ws/${cep}/json/`
@@ -194,4 +220,39 @@ function preencheCamposComCEP(data) {
     logradouro.value = data.logradouro
     cidade.value = data.localidade
     estado.value = data.uf
+}
+
+
+function validaNomeProduto(input) {
+    const nomeProduto = input.value.trim();
+    let mensagem = '';
+
+    if (nomeProduto.length === 0) {
+        mensagem = 'O nome do produto não pode estar vazio.';
+    }
+
+    input.setCustomValidity(mensagem);
+}
+
+function validaQuantidade(input) {
+    const quantidade = input.value;
+    let mensagem = '';
+
+    if (quantidade <= 0) {
+        mensagem = 'A quantidade em estoque deve ser maior que 0.';
+    }
+
+    input.setCustomValidity(mensagem);
+}
+
+function validaPreco(input) {
+    const preco = input.value.replace(/\D/g, '');
+
+    let mensagem = '';
+
+    if (!preco || isNaN(preco) || preco <= 0) {
+        mensagem = 'O preço deve ser um número válido e maior que 0.';
+    }
+
+    input.setCustomValidity(mensagem);
 }
